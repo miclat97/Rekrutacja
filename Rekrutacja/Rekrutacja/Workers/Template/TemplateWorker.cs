@@ -1,13 +1,8 @@
-﻿using Soneta.Business;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Rekrutacja.Workers.Template;
+using Soneta.Business;
 using Soneta.Kadry;
-using Soneta.KadryPlace;
 using Soneta.Types;
-using Rekrutacja.Workers.Template;
+using System;
 
 //Rejetracja Workera - Pierwszy TypeOf określa jakiego typu ma być wyświetlany Worker, Drugi parametr wskazuje na jakim Typie obiektów będzie wyświetlany Worker
 [assembly: Worker(typeof(TemplateWorker), typeof(Pracownicy))]
@@ -24,6 +19,12 @@ namespace Rekrutacja.Workers.Template
             {
                 this.DataObliczen = Date.Today;
             }
+            [Caption("Operacja")]
+            public char Operacja { get; set; }
+            [Caption("A")]
+            public double A { get; set; }
+            [Caption("B")]
+            public double B { get; set; }
         }
         //Obiekt Context jest to pudełko które przechowuje Typy danych, aktualnie załadowane w aplikacji
         //Atrybut Context pobiera z "Contextu" obiekty które aktualnie widzimy na ekranie
@@ -61,6 +62,30 @@ namespace Rekrutacja.Workers.Template
                     var pracownikZSesja = nowaSesja.Get(pracownik);
                     //Features - są to pola rozszerzające obiekty w bazie danych, dzięki czemu nie jestesmy ogarniczeni to kolumn jakie zostały utworzone przez producenta
                     pracownikZSesja.Features["DataObliczen"] = this.Parametry.DataObliczen;
+                    if (this.Parametry.Operacja.Equals('+'))
+                    {
+                        pracownikZSesja.Features["Wynik"] = this.Parametry.A + this.Parametry.B;
+                    }
+                    else if (this.Parametry.Operacja.Equals('-'))
+                    {
+                        pracownikZSesja.Features["Wynik"] = this.Parametry.A - this.Parametry.B;
+                    }
+                    else if (this.Parametry.Operacja.Equals('*'))
+                    {
+                        pracownikZSesja.Features["Wynik"] = this.Parametry.A * this.Parametry.B;
+                    }
+                    else if (this.Parametry.Operacja.Equals('/'))
+                    {
+                        if (this.Parametry.B != 0)
+                        {
+                            pracownikZSesja.Features["Wynik"] = this.Parametry.A / this.Parametry.B;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Dzielenie przez 0");
+                        }
+                    }
+
                     //Zatwierdzamy zmiany wykonane w sesji
                     trans.CommitUI();
                 }
